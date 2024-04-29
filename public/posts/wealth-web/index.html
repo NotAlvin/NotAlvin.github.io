@@ -1,0 +1,400 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en-us"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>The Web of Wealth - Alvin&#39;s Data Science Blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="Unveiling High-Net-Worth Networks with Neo4j Introduction to Neo4j Neo4j, a leading graph database system, efficiently maps and analyzes complex data networks using nodes, relationships, and properties.
+Importance of Network Analysis For high-net-worth individuals, understanding their intricate web of connections is paramount, offering insights crucial for business, security, and personal matters.
+Potential Use Cases Due Diligence and Risk Assessment
+Identifying regulatory and reputational risks is facilitated by Neo4j&rsquo;s ability to uncover hidden connections, safeguarding financial institutions." />
+  <meta name="author" content="Alvin&#39;s Data Science Blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://example.org/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://example.org/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://example.org/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://example.org/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://example.org/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.125.4">
+
+  
+  
+  
+  
+  
+
+
+  
+  
+  <meta itemprop="name" content="The Web of Wealth">
+  <meta itemprop="description" content="Unveiling High-Net-Worth Networks with Neo4j Introduction to Neo4j Neo4j, a leading graph database system, efficiently maps and analyzes complex data networks using nodes, relationships, and properties.
+Importance of Network Analysis For high-net-worth individuals, understanding their intricate web of connections is paramount, offering insights crucial for business, security, and personal matters.
+Potential Use Cases Due Diligence and Risk Assessment
+Identifying regulatory and reputational risks is facilitated by Neo4j&rsquo;s ability to uncover hidden connections, safeguarding financial institutions.">
+  <meta itemprop="datePublished" content="2024-04-29T17:30:59+08:00">
+  <meta itemprop="dateModified" content="2024-04-29T17:30:59+08:00">
+  <meta itemprop="wordCount" content="393">
+  
+  <meta property="og:url" content="https://example.org/posts/wealth-web/">
+  <meta property="og:site_name" content="Alvin&#39;s Data Science Blog">
+  <meta property="og:title" content="The Web of Wealth">
+  <meta property="og:description" content="Unveiling High-Net-Worth Networks with Neo4j Introduction to Neo4j Neo4j, a leading graph database system, efficiently maps and analyzes complex data networks using nodes, relationships, and properties.
+Importance of Network Analysis For high-net-worth individuals, understanding their intricate web of connections is paramount, offering insights crucial for business, security, and personal matters.
+Potential Use Cases Due Diligence and Risk Assessment
+Identifying regulatory and reputational risks is facilitated by Neo4j’s ability to uncover hidden connections, safeguarding financial institutions.">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-04-29T17:30:59+08:00">
+    <meta property="article:modified_time" content="2024-04-29T17:30:59+08:00">
+
+  
+  <meta name="twitter:card" content="summary"><meta name="twitter:title" content="The Web of Wealth">
+<meta name="twitter:description" content="Unveiling High-Net-Worth Networks with Neo4j Introduction to Neo4j Neo4j, a leading graph database system, efficiently maps and analyzes complex data networks using nodes, relationships, and properties.
+Importance of Network Analysis For high-net-worth individuals, understanding their intricate web of connections is paramount, offering insights crucial for business, security, and personal matters.
+Potential Use Cases Due Diligence and Risk Assessment
+Identifying regulatory and reputational risks is facilitated by Neo4j&rsquo;s ability to uncover hidden connections, safeguarding financial institutions.">
+
+  
+  
+  
+  <link rel="canonical" href="https://example.org/posts/wealth-web/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a
+      class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold"
+      href="https://example.org/"
+      >Alvin&#39;s Data Science Blog</a
+    >
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl px-8 pb-16 pt-12 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">The Web of Wealth</h1>
+
+    
+    <div class="text-sm antialiased opacity-60">
+      
+      <time>Apr 29, 2024</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><h3 id="unveiling-high-net-worth-networks-with-neo4j">Unveiling High-Net-Worth Networks with Neo4j</h3>
+<h4 id="introduction-to-neo4j">Introduction to Neo4j</h4>
+<p>Neo4j, a leading graph database system, efficiently maps and analyzes complex data networks using nodes, relationships, and properties.</p>
+<h4 id="importance-of-network-analysis">Importance of Network Analysis</h4>
+<p>For high-net-worth individuals, understanding their intricate web of connections is paramount, offering insights crucial for business, security, and personal matters.</p>
+<h4 id="potential-use-cases">Potential Use Cases</h4>
+<ol>
+<li>
+<p><strong>Due Diligence and Risk Assessment</strong></p>
+<ul>
+<li>Identifying regulatory and reputational risks is facilitated by Neo4j&rsquo;s ability to uncover hidden connections, safeguarding financial institutions.</li>
+</ul>
+</li>
+<li>
+<p><strong>Personalized Marketing and Relationship Management</strong></p>
+<ul>
+<li>Companies leverage Neo4j to craft personalized offers based on high-net-worth individuals&rsquo; preferences and affiliations, enhancing marketing effectiveness.</li>
+</ul>
+</li>
+<li>
+<p><strong>Security and Privacy Enhancements</strong></p>
+<ul>
+<li>Neo4j assists in threat assessment and privacy protection by analyzing associate networks, crucial for individuals valuing discretion.</li>
+</ul>
+</li>
+<li>
+<p><strong>Business Networking Optimization</strong></p>
+<ul>
+<li>Neo4j enables high-net-worth individuals to identify key connections for expanding business opportunities and fostering strategic partnerships.</li>
+</ul>
+</li>
+<li>
+<p><strong>Family Office Management</strong></p>
+<ul>
+<li>Family offices utilize Neo4j to streamline operations and enhance decision-making by mapping out family members&rsquo; roles, investments, and interdependencies.</li>
+</ul>
+</li>
+</ol>
+<h4 id="conclusion">Conclusion</h4>
+<p>Neo4j&rsquo;s application in dissecting high-net-worth networks offers invaluable insights, spanning financial management, security, personalized services, and strategic planning.</p>
+<h3 id="utilizing-wealth-x-data-to-build-such-a-graph">Utilizing Wealth-X data to build such a graph</h3>
+<p>Let&rsquo;s begin by getting the data required to build such a graph from Wealth-X, a compaby providing verified data on high-net-worth individuals. The choice of Wealth-X for data retrieval stems from its unparalleled collection of records on wealthy individuals and by leveraging their clean and trustable data, we can tap into a wealth of information crucial for informed decision-making, strategic planning, and tailored engagement strategies with high-net-worth individuals.</p>
+<pre tabindex="0"><code>import pandas as pd
+import requests
+import json
+from tqdm import tqdm
+
+&#39;&#39;&#39;
+Testing API Call
+&#39;&#39;&#39;
+def get_api_key():
+    with open(&#39;utils/documents/config.json&#39;) as f:
+        config = json.load(f)
+    return config[&#39;username&#39;], config[&#39;password&#39;], config[&#39;api_key&#39;]
+
+username, password, api_key = get_api_key()
+
+headers = {&#39;username&#39;: username,
+           &#39;password&#39;: password,
+           &#39;apikey&#39;: api_key,
+           &#39;accept&#39;: &#34;application/json&#34;
+           }
+
+
+&#39;&#39;&#39;
+Method to GET from wealthx API and store successfully gotten and failed dossiers
+&#39;&#39;&#39;
+def call_wealthx(dossier_list):
+    storage = {}
+    failure = {}
+    print(&#34;***** Begin extracting dossier information *****&#34;)
+
+    #for dossier_id in dossier_list:
+    for dossier_id in tqdm(dossier_list, desc=&#34;Processing Dossiers&#34;):
+        template_url = f&#34;https://connect.wealthx.com/rest/v1/dossiers/{dossier_id}&#34;
+        try:
+            raw = requests.get(template_url, headers = headers)
+            dossier_json = json.loads(raw.text)
+            storage[dossier_id] = dossier_json[&#39;profilebasic&#39;]
+        except:
+            dossier_json = {&#34;Message&#34;:f&#34;Failed to get Dossier ID: {dossier_id}&#34;}
+            failure[dossier_id] = dossier_json
+    
+    df = pd.DataFrame.from_dict(storage, orient=&#39;index&#39;)
+    print(&#34;***** Done extracting dossier information *****&#34;)
+    if failure:
+        for key, value in failure.items():
+            print(value[&#39;Message&#39;])
+    else:
+        print(&#34;All dossiers successfully extracted&#34;)
+    return df, failure
+</code></pre></section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://example.org/posts/agent-ablation/"
+      ><span>Quantifying Agent Performance Optimization</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="opaco mx-auto flex h-[4.5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"
+>
+  <div class="mr-auto">
+    &copy; 2024
+    <a class="link" href="https://example.org/">Alvin&#39;s Data Science Blog</a>
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >Powered by Hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >✎ Paper</a
+  >
+</footer>
+
+  </body>
+</html>

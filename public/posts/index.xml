@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on Alvin&#39;s Site</title>
+    <title>Posts on Alvin&#39;s Data Science Blog</title>
     <link>https://example.org/posts/</link>
-    <description>Recent content in Posts on Alvin&#39;s Site</description>
+    <description>Recent content in Posts on Alvin&#39;s Data Science Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 29 Apr 2024 14:42:24 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 29 Apr 2024 17:30:59 +0800</lastBuildDate>
     <atom:link href="https://example.org/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>The Web of Wealth</title>
+      <link>https://example.org/posts/wealth-web/</link>
+      <pubDate>Mon, 29 Apr 2024 17:30:59 +0800</pubDate>
+      <guid>https://example.org/posts/wealth-web/</guid>
+      <description>Unveiling High-Net-Worth Networks with Neo4j Introduction to Neo4j Neo4j, a leading graph database system, efficiently maps and analyzes complex data networks using nodes, relationships, and properties.&#xA;Importance of Network Analysis For high-net-worth individuals, understanding their intricate web of connections is paramount, offering insights crucial for business, security, and personal matters.&#xA;Potential Use Cases Due Diligence and Risk Assessment&#xA;Identifying regulatory and reputational risks is facilitated by Neo4j&amp;rsquo;s ability to uncover hidden connections, safeguarding financial institutions.</description>
+    </item>
+    <item>
       <title>Quantifying Agent Performance Optimization</title>
-      <link>https://example.org/posts/test/</link>
+      <link>https://example.org/posts/agent-ablation/</link>
       <pubDate>Mon, 29 Apr 2024 14:42:24 +0800</pubDate>
-      <guid>https://example.org/posts/test/</guid>
+      <guid>https://example.org/posts/agent-ablation/</guid>
       <description>Introduction The increasing complexity of machine learning systems poses challenges in understanding the effects of individual components or design choices on overall performance. In this article, we propose a method for quantifying the effects of individual mutations to an LLM (Large Language Model) workflow using an ablation study.&#xA;Experiment Design 1. Dataset Acquisition To ensure consistency and comparability, we begin by acquiring a dataset consisting of tasks, all sharing the same structural framework.</description>
     </item>
   </channel>

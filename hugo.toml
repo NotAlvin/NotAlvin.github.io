@@ -1,4 +1,4 @@
 baseURL = 'https://example.org/'
 languageCode = 'en-us'
-title = "Alvin's Site"
+title = "Alvin's Data Science Blog"
 theme = 'paper'

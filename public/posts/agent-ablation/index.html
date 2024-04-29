@@ -1,0 +1,369 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en-us"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>Quantifying Agent Performance Optimization - Alvin&#39;s Data Science Blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="Introduction The increasing complexity of machine learning systems poses challenges in understanding the effects of individual components or design choices on overall performance. In this article, we propose a method for quantifying the effects of individual mutations to an LLM (Large Language Model) workflow using an ablation study.
+Experiment Design 1. Dataset Acquisition To ensure consistency and comparability, we begin by acquiring a dataset consisting of tasks, all sharing the same structural framework." />
+  <meta name="author" content="Alvin&#39;s Data Science Blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://example.org/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://example.org/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://example.org/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://example.org/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://example.org/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.125.4">
+
+  
+  
+  
+  
+  
+
+
+  
+  
+  <meta itemprop="name" content="Quantifying Agent Performance Optimization">
+  <meta itemprop="description" content="Introduction The increasing complexity of machine learning systems poses challenges in understanding the effects of individual components or design choices on overall performance. In this article, we propose a method for quantifying the effects of individual mutations to an LLM (Large Language Model) workflow using an ablation study.
+Experiment Design 1. Dataset Acquisition To ensure consistency and comparability, we begin by acquiring a dataset consisting of tasks, all sharing the same structural framework.">
+  <meta itemprop="datePublished" content="2024-04-29T14:42:24+08:00">
+  <meta itemprop="dateModified" content="2024-04-29T14:42:24+08:00">
+  <meta itemprop="wordCount" content="756">
+  
+  <meta property="og:url" content="https://example.org/posts/agent-ablation/">
+  <meta property="og:site_name" content="Alvin&#39;s Data Science Blog">
+  <meta property="og:title" content="Quantifying Agent Performance Optimization">
+  <meta property="og:description" content="Introduction The increasing complexity of machine learning systems poses challenges in understanding the effects of individual components or design choices on overall performance. In this article, we propose a method for quantifying the effects of individual mutations to an LLM (Large Language Model) workflow using an ablation study.
+Experiment Design 1. Dataset Acquisition To ensure consistency and comparability, we begin by acquiring a dataset consisting of tasks, all sharing the same structural framework.">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-04-29T14:42:24+08:00">
+    <meta property="article:modified_time" content="2024-04-29T14:42:24+08:00">
+
+  
+  <meta name="twitter:card" content="summary"><meta name="twitter:title" content="Quantifying Agent Performance Optimization">
+<meta name="twitter:description" content="Introduction The increasing complexity of machine learning systems poses challenges in understanding the effects of individual components or design choices on overall performance. In this article, we propose a method for quantifying the effects of individual mutations to an LLM (Large Language Model) workflow using an ablation study.
+Experiment Design 1. Dataset Acquisition To ensure consistency and comparability, we begin by acquiring a dataset consisting of tasks, all sharing the same structural framework.">
+
+  
+  
+  
+  <link rel="canonical" href="https://example.org/posts/agent-ablation/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a
+      class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold"
+      href="https://example.org/"
+      >Alvin&#39;s Data Science Blog</a
+    >
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl px-8 pb-16 pt-12 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">Quantifying Agent Performance Optimization</h1>
+
+    
+    <div class="text-sm antialiased opacity-60">
+      
+      <time>Apr 29, 2024</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><h2 id="introduction">Introduction</h2>
+<p>The increasing complexity of machine learning systems poses challenges in understanding the effects of individual components or design choices on overall performance. In this article, we propose a method for quantifying the effects of individual mutations to an LLM (Large Language Model) workflow using an ablation study.</p>
+<h2 id="experiment-design">Experiment Design</h2>
+<h3 id="1-dataset-acquisition">1. Dataset Acquisition</h3>
+<p>To ensure consistency and comparability, we begin by acquiring a dataset consisting of tasks, all sharing the same structural framework. This dataset serves as the foundation for our experimentation.</p>
+<h3 id="2-task-breakdown">2. Task Breakdown</h3>
+<p>To illustrate the process of task breakdown and agent assignment, we provide an example scenario below:</p>
+<h4 id="example-scenario">Example Scenario:</h4>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Stage</th>
+<th>Optimization/Mutation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Hypothetically let&rsquo;s say we want to design and optimize an LLM for coding tasks, then a possible agent implementation with AutoGEN could be:</td>
+<td>Choice of model used for each agent</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Upon seeing the task, planner agent breaks it down into 3 pre-defined subtasks</td>
+<td>Prompt used, subtasks</td>
+</tr>
+<tr>
+<td>3</td>
+<td>First subtask is for a coder agent, who attempts to write an algorithm to solve the task</td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Next subtask is for a tester agent, who writes test cases based on the question that the code is supposed to pass</td>
+<td>RAG tool for testcase database</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Subsequently, we pass the code and tests to a QA agent, who tries to run the code on the test cases to see if tests are passed</td>
+<td></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Should test cases fail, QA agent communicates with the planner agent along with feedback and repeats the process</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>In this example, the task of designing and optimizing an LLM for coding tasks is broken down into six sequential steps, each involving specific agents and optimization strategies. This breakdown serves as a blueprint for subsequent experiments, guiding the assignment of agents and the introduction of mutations.</p>
+<h3 id="3-agent-assignment">3. Agent Assignment</h3>
+<p>Following the delineation of individual steps, agents are assigned to each step according to established documentation. Agents encompass various components such as planning what to do next, getting required data, summarizing information, or generating outputs to users, each fulfilling specific roles within the workflow.</p>
+<h3 id="4-tool-assignment">4. Tool Assignment</h3>
+<p>Where necessary, tools are assigned to agents to facilitate their functionality within the workflow. This step ensures that agents have access to the requisite resources and utilities needed to execute their designated tasks effectively. Assignments are made based on tutorials and best practices in the field.</p>
+<h3 id="5-baseline-performance-evaluation">5. Baseline Performance Evaluation</h3>
+<p>Prior to implementing any mutations, we conduct a comprehensive evaluation of baseline performance for each model type employed in the workflow. This evaluation involves comparing performance metrics against established benchmarks derived from original datasets.</p>
+<h3 id="6-mutation">6. Mutation</h3>
+<p>With the groundwork laid, we can proceed to introduce mutations to individual agents within the workflow. These mutations encompass alterations to agent prompts, changes in the underlying language models, and adjustments to assigned tools. Brainstorming sessions are conducted to explore and identify potential mutations, ensuring a diverse and comprehensive exploration of the solution space.</p>
+<h3 id="7-outcome-attribution">7. Outcome Attribution</h3>
+<p>Subsequent changes in the final outcome are meticulously attributed to specific mutations introduced in the workflow. This attribution process adheres to the principles of ablation studies, wherein the effects of individual components on overall performance are systematically isolated and analyzed. For further reference on ablation study methodologies, refer to <a href="https://arxiv.org/abs/1901.08644">this paper</a>.</p>
+<h3 id="8-effect-logging">8. Effect Logging</h3>
+<p>To track the impact of each mutation, we measure and log the corresponding changes in evaluation metrics. This logging process enables us to quantitatively assess the efficacy of individual mutations and their influence on overall performance.</p>
+<h3 id="9-mutation-analysis">9. Mutation Analysis</h3>
+<p>Logs detailing the types and effects of mutations are compiled and subjected to rigorous analysis. This analysis provides invaluable insights into how individual mutations affect the final outcome, shedding light on the underlying mechanisms driving performance variations.</p>
+<h3 id="10-repeat-for-next-task">10. Repeat for Next Task</h3>
+<p>The experimental procedure described above is iteratively applied to each task within the dataset. This systematic repetition ensures a comprehensive exploration of the solution space across diverse task domains.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>In conclusion, this article proposes the utilizing of ablation studies to measure the impact of different optimizations on LLM workflows, which often function as black boxes due to their complexity. By systematically introducing mutations and analyzing their effects, we gain valuable insights into the origins of performance improvements. Understanding where these improvements stem from provides a solid foundation for continued optimization efforts in LLM workflows and machine learning systems in general. By shedding light on the inner workings of these complex systems, such research could contribute to advancing the field of machine learning and reinforces the importance of transparency and interpretability in model development.</p>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    <a
+      class="flex w-1/2 items-center rounded-l-md p-6 pr-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://example.org/posts/wealth-web/"
+      ><span class="mr-1.5">←</span><span>The Web of Wealth</span></a
+    >
+    
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="opaco mx-auto flex h-[4.5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"
+>
+  <div class="mr-auto">
+    &copy; 2024
+    <a class="link" href="https://example.org/">Alvin&#39;s Data Science Blog</a>
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >Powered by Hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >✎ Paper</a
+  >
+</footer>
+
+  </body>
+</html>
