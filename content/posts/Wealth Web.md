@@ -5,15 +5,18 @@ draft = false
 math = false
 +++
 
-### Unveiling High-Net-Worth Networks with Neo4j
+## Unveiling High-Net-Worth Networks with Neo4j
 
-#### Introduction to Neo4j
+![Connections to Donald Trump](/images/Donald_Trump_Graph.png)
+
+
+### Introduction to Neo4j
 Neo4j, a leading graph database system, efficiently maps and analyzes complex data networks using nodes, relationships, and properties.
 
-#### Importance of Network Analysis
+### Importance of Network Analysis
 For high-net-worth individuals, understanding their intricate web of connections is paramount, offering insights crucial for business, security, and personal matters.
 
-#### Potential Use Cases
+### Potential Use Cases
 
 1. **Due Diligence and Risk Assessment**
    - Identifying regulatory and reputational risks is facilitated by Neo4j's ability to uncover hidden connections, safeguarding financial institutions.
@@ -30,12 +33,9 @@ For high-net-worth individuals, understanding their intricate web of connections
 5. **Family Office Management**
    - Family offices utilize Neo4j to streamline operations and enhance decision-making by mapping out family members' roles, investments, and interdependencies.
 
-#### Conclusion
-Neo4j's application in dissecting high-net-worth networks offers invaluable insights, spanning financial management, security, personalized services, and strategic planning.
+## Utilizing Wealth-X data to build such a graph
 
-### Utilizing Wealth-X data to build such a graph
-
-Let's begin by getting the data required to build such a graph from Wealth-X, a compaby providing verified data on high-net-worth individuals. The choice of Wealth-X for data retrieval stems from its unparalleled collection of records on wealthy individuals and by leveraging their clean and trustable data, we can tap into a wealth of information crucial for informed decision-making, strategic planning, and tailored engagement strategies with high-net-worth individuals.
+Let's begin by getting the data required to build such a graph from Wealth-X, a company providing verified data on high-net-worth individuals. The choice of Wealth-X for data retrieval stems from its unparalleled collection of records on wealthy individuals and by leveraging their clean and trustable data, we can tap into a wealth of information crucial for informed decision-making, strategic planning, and tailored engagement strategies with high-net-worth individuals.
 
 ```
 import pandas as pd
@@ -88,3 +88,6 @@ def call_wealthx(dossier_list):
         print("All dossiers successfully extracted")
     return df, failure
 ```
+
+### Conclusion
+Neo4j's application in dissecting high-net-worth networks offers invaluable insights, spanning financial management, security, personalized services, and strategic planning.
