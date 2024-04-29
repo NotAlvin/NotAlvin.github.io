@@ -95,9 +95,11 @@ Now that we have extracted dossier data for the list of parties we're interested
 
 #### Function that gets neo4j credentials for where the graph is stored
 ```
+# Function that gets neo4j credentials for where the graph is stored
 def get_neo4j_credentials():
-    # Code snippet omitted for brevity
-    return config['uri'], config['neo4j_username'], config['neo4j_passwo']
+    with open('utils/documents/config.json') as f:
+        config = json.load(f)
+    return config['uri'], config['neo4j_username'], config['neo4j_password']
 ```
 
 2. Function to Delete All Nodes and Relationships: This function clears the existing graph by deleting all nodes and relationships.
