@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on My New Hugo Site</title>
+    <title>Posts on Alvin&#39;s Site</title>
     <link>https://example.org/posts/</link>
-    <description>Recent content in Posts on My New Hugo Site</description>
+    <description>Recent content in Posts on Alvin&#39;s Site</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 29 Apr 2024 14:42:24 +0800</lastBuildDate>
@@ -13,7 +13,7 @@
       <link>https://example.org/posts/test/</link>
       <pubDate>Mon, 29 Apr 2024 14:42:24 +0800</pubDate>
       <guid>https://example.org/posts/test/</guid>
-      <description>Quantifying Performance of Agent Optimization: Using an Ablation study to improve Large Language Models Introduction The increasing complexity of machine learning systems poses challenges in understanding the effects of individual components or design choices on overall performance. In this article, we propose a method for quantifying the effects of individual mutations to an LLM (Large Language Model) workflow using an ablation study.&#xA;Experiment Design 1. Dataset Acquisition To ensure consistency and comparability, we begin by acquiring a dataset consisting of tasks, all sharing the same structural framework.</description>
+      <description>Introduction The increasing complexity of machine learning systems poses challenges in understanding the effects of individual components or design choices on overall performance. In this article, we propose a method for quantifying the effects of individual mutations to an LLM (Large Language Model) workflow using an ablation study.&#xA;Experiment Design 1. Dataset Acquisition To ensure consistency and comparability, we begin by acquiring a dataset consisting of tasks, all sharing the same structural framework.</description>
     </item>
   </channel>
 </rss>
