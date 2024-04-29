@@ -68,7 +68,7 @@ def call_wealthx(dossier_list):
     failure = {}
     print("***** Begin extracting dossier information *****")
 
-    #for dossier_id in dossier_list:
+    # for dossier_id in dossier_list:
     for dossier_id in tqdm(dossier_list, desc="Processing Dossiers"):
         template_url = f"https://connect.wealthx.com/rest/v1/dossiers/{dossier_id}"
         try:
@@ -93,7 +93,7 @@ Now that we have extracted dossier data for the list of parties we're interested
 
 1. Function to Get Neo4j Credentials: This function retrieves the credentials (URI, username, and password) required to connect to the Neo4j database from a JSON configuration file.
 
-####Function that gets neo4j credentials for where the graph is stored
+#### Function that gets neo4j credentials for where the graph is stored
 ```
 def get_neo4j_credentials():
     # Code snippet omitted for brevity
@@ -102,7 +102,7 @@ def get_neo4j_credentials():
 
 2. Function to Delete All Nodes and Relationships: This function clears the existing graph by deleting all nodes and relationships.
 
-####Function that deletes all the nodes and edges in existing graph (Refreshes the graph before attempting to add)
+#### Function that deletes all the nodes and edges in existing graph (Refreshes the graph before attempting to add)
 ```
 def delete_all_nodes_and_relationships(driver):
     # Delete all nodes and relationships
