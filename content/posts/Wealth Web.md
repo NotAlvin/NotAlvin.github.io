@@ -7,7 +7,7 @@ math = false
 
 ## Unveiling High-Net-Worth Networks with Neo4j
 
-![Connections to Donald Trump](/content/posts/images/Donald_Trump_Graph.png)
+![](/content/posts/images/Donald_Trump_Graph.png)
 
 
 ### Introduction to Neo4j
