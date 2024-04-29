@@ -2,6 +2,7 @@
 title = 'Quantifying Agent Performance Optimization'
 date = 2024-04-29T14:42:24+08:00
 draft = false
+math = false
 +++
 
 # Quantifying Performance of Agent Optimization: Using an Ablation study to improve Large Language Models
@@ -54,4 +55,5 @@ Logs detailing the types and effects of mutations are compiled and subjected to 
 The experimental procedure described above is iteratively applied to each task within the dataset. This systematic repetition ensures a comprehensive exploration of the solution space across diverse task domains.
 
 ## Conclusion
-In summary, our study demonstrates the utility of ablation studies in quantifying the effects of agent optimization within machine learning workflows. By systematically introducing and analyzing mutations, we offer a deeper understanding of the intricate interplay between individual components and overall system performance. Our findings contribute to advancing the field of machine learning by providing actionable insights for optimizing complex systems.
+In conclusion, our study showcases the effectiveness of utilizing ablation studies to measure the impact of different optimizations on LLM workflows, which often function as black boxes due to their complexity. By systematically introducing mutations and analyzing their effects, we gain valuable insights into the origins of performance improvements. Understanding where these improvements stem from provides a solid foundation for continued optimization efforts in LLM workflows and machine learning systems in general. By shedding light on the inner workings of these complex systems, our research contributes to advancing the field of machine learning and reinforces the importance of transparency and interpretability in model development.
+
