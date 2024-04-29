@@ -5,8 +5,6 @@ draft = false
 math = false
 +++
 
-# Quantifying Performance of Agent Optimization: Using an Ablation study to improve Large Language Models
-
 ## Introduction
 The increasing complexity of machine learning systems poses challenges in understanding the effects of individual components or design choices on overall performance. In this article, we propose a method for quantifying the effects of individual mutations to an LLM (Large Language Model) workflow using an ablation study.
 
