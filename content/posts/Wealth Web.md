@@ -93,7 +93,7 @@ Now that we have extracted dossier data for the list of parties we're interested
 
 1. Function to Get Neo4j Credentials: This function retrieves the credentials (URI, username, and password) required to connect to the Neo4j database from a JSON configuration file.
 
-# Function that gets neo4j credentials for where the graph is stored
+####Function that gets neo4j credentials for where the graph is stored
 ```
 def get_neo4j_credentials():
     # Code snippet omitted for brevity
@@ -102,18 +102,18 @@ def get_neo4j_credentials():
 
 2. Function to Delete All Nodes and Relationships: This function clears the existing graph by deleting all nodes and relationships.
 
-# Function that deletes all the nodes and edges in existing graph (Refreshes the graph before attempting to add)
-'''
+####Function that deletes all the nodes and edges in existing graph (Refreshes the graph before attempting to add)
+```
 def delete_all_nodes_and_relationships(driver):
     # Delete all nodes and relationships
     with driver.session() as session:
         session.run("MATCH (n) DETACH DELETE n")
-'''
+```
 
-3. Function to Create Nodes in the Graph: This function iterates through the DataFrame and creates nodes in the Neo4j graph for each individual, with attributes such as name, total assets, source of wealth, etc.
+1. Function to Create Nodes in the Graph: This function iterates through the DataFrame and creates nodes in the Neo4j graph for each individual, with attributes such as name, total assets, source of wealth, etc.
 
-# Function that adds the individuals in the dataframe as nodes in the graph
-'''
+#### Function that adds the individuals in the dataframe as nodes in the graph
+```
 def create_graph(df, driver):
     # Create nodes with names and IDs
     with driver.session() as session:
@@ -153,12 +153,12 @@ def create_graph(df, driver):
                 sourceOfWealth=source_of_wealth,
                 businessCountry=business_country
             )
-'''
+```
 
 4. Function to Create Relationships Between Nodes: This function creates relationships between nodes in the graph based on specified criteria, such as known associates, family members, or service providers.
 
-# Function that creates an edge between 2 nodes in the graph, using their unique IDs as keys
-'''
+#### Function that creates an edge between 2 nodes in the graph, using their unique IDs as keys
+```
 def create_relationship(session, from_id, to_id, relationship):
     # Check if the relationship already exists
     result = session.run(
@@ -180,12 +180,12 @@ def create_relationship(session, from_id, to_id, relationship):
             from_id=from_id,
             to_id=to_id,
         )
-'''
+```
 
 5. Functions for Node Creation and Relationship Processing: These functions handle the creation or update of nodes, as well as the processing of relationship columns from the DataFrame and adding connections to the graph.
 
-# Function that creates or updates a node in the graph
-'''
+#### Function that creates or updates a node in the graph
+```
 def create_or_update_node(session, node_id, node_name, node_type, attributes=None):
     # Check if the node already exists
     result = session.run(
@@ -204,10 +204,10 @@ def create_or_update_node(session, node_id, node_name, node_type, attributes=Non
             parameters.update(attributes)
             #print(query)
         session.run(query, **parameters)
-'''
+```
 
-# Function that processes relationship columns and adds connections to the graph
-'''
+#### Function that processes relationship columns and adds connections to the graph
+```
 def process_relationship_column(session, person_id, column_name, column_data, relationship_col):
     try:
         relationships = literal_eval(column_data)
@@ -229,10 +229,10 @@ def process_relationship_column(session, person_id, column_name, column_data, re
                     create_relationship(session, person_id, relationship_id, replace_with_single_underscore(relationship_type))
                 except Exception as e:
                     print(f"Error adding {column_name}: {e}")
-'''
+```
 
-# Function that adds connections to the graph based on DataFrame columns
-'''
+#### Function that adds connections to the graph based on DataFrame columns
+```
 def add_connections_to_graph(df, driver):
     with driver.session() as session:
         for index, row in tqdm(df.iterrows(), total=df.shape[0]):
@@ -241,12 +241,12 @@ def add_connections_to_graph(df, driver):
                 mapping = {'knownAssociates': "relationship", 'families': "relationship", 'serviceProviders': "position"}
                 process_relationship_column(session, person_id, column_name, row[column_name], mapping[column_name])
         print('All added')
-'''
+```
 
 ### Conclusion
 Now that we have defined all the necessary functions to both get the raw data and import it as nodes and edges into Neo4J, let us put it all together and see what the resulting graph looks like:
 
-'''
+```
 dossier_list = pd.read_csv('utils/documents/eu_wealth_x.csv')['Dossier ID'] # List of dossier IDs
 df, failure = call_wealthx(dossier_list)
 df.to_csv('utils/documents/new_full_client_data.csv') # Save for future use
@@ -262,5 +262,6 @@ create_graph(df, driver)
 print('***** Master nodes added *****')
 add_connections_to_graph(df, driver)
 print('***** Connections loaded *****')
-'''
+```
+
 Neo4j's application in dissecting high-net-worth networks offers invaluable insights, spanning financial management, security, personalized services, and strategic planning.
