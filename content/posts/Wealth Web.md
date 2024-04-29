@@ -89,5 +89,178 @@ def call_wealthx(dossier_list):
     return df, failure
 ```
 
+Now that we have extracted dossier data for the list of parties we're interested in, we need to write some code to import these individuals to Neo4J as nodes, and the relationships between them as edges. The following code snippets are crucial for interacting with the Neo4j database, managing node and relationship creation, and adding data from the DataFrame to the graph:
+
+1. Function to Get Neo4j Credentials: This function retrieves the credentials (URI, username, and password) required to connect to the Neo4j database from a JSON configuration file.
+
+# Function that gets neo4j credentials for where the graph is stored
+```
+def get_neo4j_credentials():
+    # Code snippet omitted for brevity
+    return config['uri'], config['neo4j_username'], config['neo4j_passwo']
+```
+
+2. Function to Delete All Nodes and Relationships: This function clears the existing graph by deleting all nodes and relationships.
+
+# Function that deletes all the nodes and edges in existing graph (Refreshes the graph before attempting to add)
+'''
+def delete_all_nodes_and_relationships(driver):
+    # Delete all nodes and relationships
+    with driver.session() as session:
+        session.run("MATCH (n) DETACH DELETE n")
+'''
+
+3. Function to Create Nodes in the Graph: This function iterates through the DataFrame and creates nodes in the Neo4j graph for each individual, with attributes such as name, total assets, source of wealth, etc.
+
+# Function that adds the individuals in the dataframe as nodes in the graph
+'''
+def create_graph(df, driver):
+    # Create nodes with names and IDs
+    with driver.session() as session:
+        for index, row in df.iterrows():
+            # Process dictionary columns stored as strings
+            try:
+                entities = literal_eval(row['positions'])
+                for entity in entities:
+                    if entity['isPrimary']:
+                        entity_name = entity['entityName']
+            except Exception:
+                entity_name = "Unknown"
+
+            try:
+                total_assets = literal_eval(row['netWorth'])['netWorthLower'] #TODO Other columns might be appropriate - Check coverage
+            except Exception:
+                total_assets = "Unknown"
+
+            try:
+                source_of_wealth = literal_eval(row['wealthSources'])[0]
+            except Exception:
+                source_of_wealth = "Unknown"
+
+            try:
+                business_country = literal_eval(row['businessContact'])['country']
+            except Exception:
+                business_country = "Unknown"
+
+            # Create person node with attributes
+            session.run(
+                "CREATE (p:Person {id: $id, name: $name, dossierCategory: $dossierCategory, entityName: $entityName, totalAssets: $totalAssets, sourceOfWealth: $sourceOfWealth, businessCountry: $businessCountry})",
+                id=row['ID'],
+                name=str(row['firstName']) + ' ' + str(row['middleName']) + ' ' + str(row['lastName']),
+                dossierCategory=row['dossierCategory'] or "Unknown",
+                entityName=entity_name,
+                totalAssets=total_assets,
+                sourceOfWealth=source_of_wealth,
+                businessCountry=business_country
+            )
+'''
+
+4. Function to Create Relationships Between Nodes: This function creates relationships between nodes in the graph based on specified criteria, such as known associates, family members, or service providers.
+
+# Function that creates an edge between 2 nodes in the graph, using their unique IDs as keys
+'''
+def create_relationship(session, from_id, to_id, relationship):
+    # Check if the relationship already exists
+    result = session.run(
+        "MATCH (from)-[r:`" + relationship + "`]-(to) "
+        "WHERE from.id = $from_id AND to.id = $to_id "
+        "RETURN count(r) AS count",
+        from_id=from_id,
+        to_id=to_id
+    )
+    record = result.single()
+    count = record["count"] if record else 0
+    
+    # If the relationship does not exist, create it from from_id to to_id
+    if count == 0:
+        session.run(
+            "MATCH (from), (to) "
+            "WHERE from.id = $from_id AND to.id = $to_id "
+            f"CREATE (from)-[:{relationship}]->(to)",
+            from_id=from_id,
+            to_id=to_id,
+        )
+'''
+
+5. Functions for Node Creation and Relationship Processing: These functions handle the creation or update of nodes, as well as the processing of relationship columns from the DataFrame and adding connections to the graph.
+
+# Function that creates or updates a node in the graph
+'''
+def create_or_update_node(session, node_id, node_name, node_type, attributes=None):
+    # Check if the node already exists
+    result = session.run(
+        "MATCH (n) WHERE n.id = $id RETURN n",
+        id=node_id
+    )
+    if not result.single():
+        # Node does not exist, create a new node
+        query = "CREATE (n:" + node_type + " {id: $id, name: $name"
+        if attributes is not None:
+            for key, value in attributes.items():
+                query += ", " + key + ": $" + key
+        query += "})"
+        parameters = {"id": node_id, "name": node_name}
+        if attributes is not None:
+            parameters.update(attributes)
+            #print(query)
+        session.run(query, **parameters)
+'''
+
+# Function that processes relationship columns and adds connections to the graph
+'''
+def process_relationship_column(session, person_id, column_name, column_data, relationship_col):
+    try:
+        relationships = literal_eval(column_data)
+    except Exception as e:
+        print(f"Error with {column_name} for person {person_id}: {column_data}")
+    else:
+        if isinstance(relationships, list):
+            for relationship in relationships:
+                try:
+                    relationship_id = relationship.get('dossierID') or relationship.get('entityID')
+                    relationship_name = relationship.get('dossierName') or relationship.get('entityName')
+                    relationship_type = relationship.get(relationship_col) or "Unknown"
+                    attributes = {
+                        'dossierCategory': relationship.get('dossierCategory') or "Unknown",
+                        'totalAssets': relationship.get('totalAssetFound') or "Unknown",
+                    }
+                    node_type = 'Person' if relationship.get('dossierID') else 'Entity'
+                    create_or_update_node(session, relationship_id, relationship_name, node_type, attributes=attributes)
+                    create_relationship(session, person_id, relationship_id, replace_with_single_underscore(relationship_type))
+                except Exception as e:
+                    print(f"Error adding {column_name}: {e}")
+'''
+
+# Function that adds connections to the graph based on DataFrame columns
+'''
+def add_connections_to_graph(df, driver):
+    with driver.session() as session:
+        for index, row in tqdm(df.iterrows(), total=df.shape[0]):
+            person_id = row['ID']
+            for column_name in ['knownAssociates', 'families', 'serviceProviders']:
+                mapping = {'knownAssociates': "relationship", 'families': "relationship", 'serviceProviders': "position"}
+                process_relationship_column(session, person_id, column_name, row[column_name], mapping[column_name])
+        print('All added')
+'''
+
 ### Conclusion
+Now that we have defined all the necessary functions to both get the raw data and import it as nodes and edges into Neo4J, let us put it all together and see what the resulting graph looks like:
+
+'''
+dossier_list = pd.read_csv('utils/documents/eu_wealth_x.csv')['Dossier ID'] # List of dossier IDs
+df, failure = call_wealthx(dossier_list)
+df.to_csv('utils/documents/new_full_client_data.csv') # Save for future use
+
+# Connect to Neo4j
+uri, username, password = get_neo4j_credentials()
+driver = GraphDatabase.driver(uri, auth=(username, password))
+
+# Perform the operations
+delete_all_nodes_and_relationships(driver)
+print('***** Graph refreshed *****')
+create_graph(df, driver)
+print('***** Master nodes added *****')
+add_connections_to_graph(df, driver)
+print('***** Connections loaded *****')
+'''
 Neo4j's application in dissecting high-net-worth networks offers invaluable insights, spanning financial management, security, personalized services, and strategic planning.
