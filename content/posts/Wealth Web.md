@@ -7,11 +7,11 @@ math = false
 
 ## Unveiling High-Net-Worth Networks with Neo4j
 
-![](/content/posts/images/Donald_Trump_Graph.png)
+![](/images/Donald_Trump_Graph.png)
 
 
 ### Introduction to Neo4j
-Neo4j, a leading graph database system, efficiently maps and analyzes complex data networks using nodes, relationships, and properties.
+Neo4j, a leading graph database system, can be used to efficiently maps and analyze complex data networks using nodes, relationships, and properties.
 
 ### Importance of Network Analysis
 For high-net-worth individuals, understanding their intricate web of connections is paramount, offering insights crucial for business, security, and personal matters.
@@ -19,25 +19,25 @@ For high-net-worth individuals, understanding their intricate web of connections
 ### Potential Use Cases
 
 1. **Due Diligence and Risk Assessment**
-   - Identifying regulatory and reputational risks is facilitated by Neo4j's ability to uncover hidden connections, safeguarding financial institutions.
+   - Regulatory and reputational risks can be identified through by Neo4j's ability to uncover hidden connections, forewarning and thus safeguarding financial institutions.
 
 2. **Personalized Marketing and Relationship Management**
-   - Companies leverage Neo4j to craft personalized offers based on high-net-worth individuals' preferences and affiliations, enhancing marketing effectiveness.
+   - Companies can leverage Neo4j to craft personalized offers based on high-net-worth individuals' preferences and affiliations, enhancing marketing effectiveness.
 
 3. **Security and Privacy Enhancements**
-   - Neo4j assists in threat assessment and privacy protection by analyzing associate networks, crucial for individuals valuing discretion.
+   - Neo4j can assist in threat assessment and privacy protection by analyzing associate networks, crucial for individuals valuing discretion.
 
 4. **Business Networking Optimization**
-   - Neo4j enables high-net-worth individuals to identify key connections for expanding business opportunities and fostering strategic partnerships.
+   - Neo4j can enable high-net-worth individuals to identify key connections for expanding business opportunities and fostering strategic partnerships.
 
 5. **Family Office Management**
-   - Family offices utilize Neo4j to streamline operations and enhance decision-making by mapping out family members' roles, investments, and interdependencies.
+   - Family offices could utilize Neo4j to streamline operations and enhance decision-making by mapping out family members' roles, investments, and interdependencies.
 
 ## Utilizing Wealth-X data to build such a graph
 
 Let's begin by getting the data required to build such a graph from Wealth-X, a company providing verified data on high-net-worth individuals. The choice of Wealth-X for data retrieval stems from its unparalleled collection of records on wealthy individuals and by leveraging their clean and trustable data, we can tap into a wealth of information crucial for informed decision-making, strategic planning, and tailored engagement strategies with high-net-worth individuals.
 
-```
+```python
 import pandas as pd
 import requests
 import json
@@ -94,7 +94,7 @@ Now that we have extracted dossier data for the list of parties we're interested
 1. Function to Get Neo4j Credentials: This function retrieves the credentials (URI, username, and password) required to connect to the Neo4j database from a JSON configuration file.
 
 #### Function that gets neo4j credentials for where the graph is stored
-```
+```python
 # Function that gets neo4j credentials for where the graph is stored
 def get_neo4j_credentials():
     with open('utils/documents/config.json') as f:
@@ -102,10 +102,10 @@ def get_neo4j_credentials():
     return config['uri'], config['neo4j_username'], config['neo4j_password']
 ```
 
-2. Function to Delete All Nodes and Relationships: This function clears the existing graph by deleting all nodes and relationships.
+2. Function to Delete All Nodes and Relationships: This function refreshes the existing graph by deleting all nodes and relationships. This is important to prevent accidental duplication during the importing process. 
 
 #### Function that deletes all the nodes and edges in existing graph (Refreshes the graph before attempting to add)
-```
+```python
 def delete_all_nodes_and_relationships(driver):
     # Delete all nodes and relationships
     with driver.session() as session:
@@ -115,7 +115,7 @@ def delete_all_nodes_and_relationships(driver):
 1. Function to Create Nodes in the Graph: This function iterates through the DataFrame and creates nodes in the Neo4j graph for each individual, with attributes such as name, total assets, source of wealth, etc.
 
 #### Function that adds the individuals in the dataframe as nodes in the graph
-```
+```python
 def create_graph(df, driver):
     # Create nodes with names and IDs
     with driver.session() as session:
@@ -157,10 +157,10 @@ def create_graph(df, driver):
             )
 ```
 
-4. Function to Create Relationships Between Nodes: This function creates relationships between nodes in the graph based on specified criteria, such as known associates, family members, or service providers.
+4. Function to Create Relationships Between Nodes: This function creates relationships between nodes in the graph based on specified criteria, such as known associates, family members, or service providers. Currently we have chosen 
 
 #### Function that creates an edge between 2 nodes in the graph, using their unique IDs as keys
-```
+```python
 def create_relationship(session, from_id, to_id, relationship):
     # Check if the relationship already exists
     result = session.run(
@@ -187,7 +187,7 @@ def create_relationship(session, from_id, to_id, relationship):
 5. Functions for Node Creation and Relationship Processing: These functions handle the creation or update of nodes, as well as the processing of relationship columns from the DataFrame and adding connections to the graph.
 
 #### Function that creates or updates a node in the graph
-```
+```python
 def create_or_update_node(session, node_id, node_name, node_type, attributes=None):
     # Check if the node already exists
     result = session.run(
@@ -209,7 +209,7 @@ def create_or_update_node(session, node_id, node_name, node_type, attributes=Non
 ```
 
 #### Function that processes relationship columns and adds connections to the graph
-```
+```python
 def process_relationship_column(session, person_id, column_name, column_data, relationship_col):
     try:
         relationships = literal_eval(column_data)
@@ -234,7 +234,7 @@ def process_relationship_column(session, person_id, column_name, column_data, re
 ```
 
 #### Function that adds connections to the graph based on DataFrame columns
-```
+```python
 def add_connections_to_graph(df, driver):
     with driver.session() as session:
         for index, row in tqdm(df.iterrows(), total=df.shape[0]):
@@ -248,7 +248,7 @@ def add_connections_to_graph(df, driver):
 ### Conclusion
 Now that we have defined all the necessary functions to both get the raw data and import it as nodes and edges into Neo4J, let us put it all together and see what the resulting graph looks like:
 
-```
+```python
 dossier_list = pd.read_csv('utils/documents/eu_wealth_x.csv')['Dossier ID'] # List of dossier IDs
 df, failure = call_wealthx(dossier_list)
 df.to_csv('utils/documents/new_full_client_data.csv') # Save for future use
@@ -266,4 +266,35 @@ add_connections_to_graph(df, driver)
 print('***** Connections loaded *****')
 ```
 
-Neo4j's application in dissecting high-net-worth networks offers invaluable insights, spanning financial management, security, personalized services, and strategic planning.
+Now that all the nodes and edges have been loaded into Neo4j, this web of wealth can offer invaluable insights into the world of high-net-worth individuals, such as the aforementioned use cases spanning financial management, security, personalized services, and strategic planning. For example, we can see the associates and connections of 2 publicly available individuals (Thierry Henri Stern from Patek Philippe and Yeung Sau Shing from the Emperor Group) in our graph below, being able to tell at a glance from their attributes some noteworthy information.
+
+![](/images/Thierry_Henri_Graph.png)
+
+| dossierName         | Thierry Henri Stern |
+| entityName          | Patek Philippe      |
+| netWorthLower      | 660,000,000         |
+| liquidLower         | 35,000,000          |
+| householdNetWorth   | 690,000,000         |
+| householdWealth     | 665,000,000         |
+| householdLiquidAsset| 665,000,000         |
+| businessCity        | Geneva              |
+| businessState       | Geneva              |
+| businessCountry     | Switzerland         |
+| dossierCategory     | CUHNW               |
+| positionHeldName    | President           |
+| related through     | business            |
+
+| dossierName         | Yeung Sau Shing     |
+| dateOfBirth         | 1943-03-03          |
+| dossierState        | active              |
+| maritalStatus       | Married             |
+| gender              | Male                |
+| primaryCompany      | Emperor Group       |
+| position            | Chairman            |
+| netWorthLower      | 1,400,000,000       |
+| liquidLower         | 930,000,000         |
+| householdNetWorth   | 1,600,000,000       |
+| householdWealth     | 1,600,000,000       |
+| householdLiquidAsset| 930,000,000         |
+
+
