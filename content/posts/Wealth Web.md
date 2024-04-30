@@ -36,7 +36,7 @@ For high-net-worth individuals, understanding their intricate web of connections
 
 ## Utilizing Wealth-X data to build such a graph
 
-Let's begin by getting the data required to build such a graph from Wealth-X, a company providing verified data on high-net-worth individuals. The choice of Wealth-X for data retrieval stems from its unparalleled collection of records on wealthy individuals and by leveraging their clean and trustable data, we can tap into a wealth of information crucial for informed decision-making, strategic planning, and tailored engagement strategies with high-net-worth individuals.
+Let's begin by getting the data required to build such a graph from Wealth-X, a company providing verified data on high-net-worth individuals. The choice of Wealth-X for data retrieval stems from its unparalleled collection of records on wealthy individuals and by leveraging their clean and trustable data, we can tap into a wealth of information crucial for informed decision-making, strategic planning, and tailored engagement strategies with high-net-worth individuals. You will need a Wealth-X account with an associated username, password and API key.
 
 ```python
 import pandas as pd
