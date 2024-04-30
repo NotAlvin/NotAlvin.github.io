@@ -269,7 +269,8 @@ print('***** Connections loaded *****')
 Now that all the nodes and edges have been loaded into Neo4j, this web of wealth can offer invaluable insights into the world of high-net-worth individuals, such as the aforementioned use cases spanning financial management, security, personalized services, and strategic planning. For example, we can see the associates and connections of 2 publicly available individuals (Thierry Henri Stern from Patek Philippe and Yeung Sau Shing from the Emperor Group) in our graph below, being able to tell at a glance from their attributes some noteworthy information.
 
 ![](/images/Thierry_Henri_Graph.png)
-
+| Attribute | Value |
+|------|-----------------------|
 | dossierName         | Thierry Henri Stern |
 | entityName          | Patek Philippe      |
 | netWorthLower      | 660,000,000         |
@@ -282,8 +283,11 @@ Now that all the nodes and edges have been loaded into Neo4j, this web of wealth
 | businessCountry     | Switzerland         |
 | dossierCategory     | CUHNW               |
 | positionHeldName    | President           |
-| related through     | business            |
 
+You can tell from the connecting edge that he is related through business to Yeung Sau Shing, and upon looking at his node's attributes one is able to discover:
+
+| Attribute | Value |
+|------|-----------------------|
 | dossierName         | Yeung Sau Shing     |
 | dateOfBirth         | 1943-03-03          |
 | dossierState        | active              |
