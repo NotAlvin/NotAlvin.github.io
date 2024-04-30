@@ -1,6 +1,6 @@
 +++
 title = 'The Web of Wealth'
-date = 2024-04-30T17:30:59+08:00
+date = 2024-04-30T11:30:59+08:00
 draft = false
 math = false
 +++
@@ -8,7 +8,6 @@ math = false
 ## Unveiling High-Net-Worth Networks with Neo4j
 
 ![](/themes/paper/static/images/Donald_Trump_Graph.png)
-
 
 ### Introduction to Neo4j
 Neo4j, a leading graph database system, can be used to efficiently maps and analyze complex data networks using nodes, relationships, and properties.
