@@ -112,7 +112,7 @@ def delete_all_nodes_and_relationships(driver):
         session.run("MATCH (n) DETACH DELETE n")
 ```
 
-1. Function to Create Nodes in the Graph: This function iterates through the DataFrame and creates nodes in the Neo4j graph for each individual, with attributes such as name, total assets, source of wealth, etc.
+3. Function to Create Nodes in the Graph: This function iterates through the DataFrame and creates nodes in the Neo4j graph for each individual, with attributes such as name, total assets, source of wealth, etc.
 
 #### Function that adds the individuals in the dataframe as nodes in the graph
 ```python
