@@ -10,9 +10,11 @@ math = false
 ![](/themes/paper/static/images/Donald_Trump_Graph.png)
 
 ### Introduction to Neo4j
+
 Neo4j, a leading graph database system, can be used to efficiently maps and analyze complex data networks using nodes, relationships, and properties.
 
 ### Importance of Network Analysis
+
 For high-net-worth individuals, understanding their intricate web of connections is paramount, offering insights crucial for business, security, and personal matters.
 
 ### Potential Use Cases
@@ -93,6 +95,7 @@ Now that we have extracted dossier data for the list of parties we're interested
 1. Function to Get Neo4j Credentials: This function retrieves the credentials (URI, username, and password) required to connect to the Neo4j database from a JSON configuration file.
 
 #### Function that gets neo4j credentials for where the graph is stored
+
 ```python
 # Function that gets neo4j credentials for where the graph is stored
 def get_neo4j_credentials():
@@ -101,9 +104,10 @@ def get_neo4j_credentials():
     return config['uri'], config['neo4j_username'], config['neo4j_password']
 ```
 
-2. Function to Delete All Nodes and Relationships: This function refreshes the existing graph by deleting all nodes and relationships. This is important to prevent accidental duplication during the importing process. 
+2. Function to Delete All Nodes and Relationships: This function refreshes the existing graph by deleting all nodes and relationships. This is important to prevent accidental duplication during the importing process.
 
 #### Function that deletes all the nodes and edges in existing graph (Refreshes the graph before attempting to add)
+
 ```python
 def delete_all_nodes_and_relationships(driver):
     # Delete all nodes and relationships
@@ -114,6 +118,7 @@ def delete_all_nodes_and_relationships(driver):
 3. Function to Create Nodes in the Graph: This function iterates through the DataFrame and creates nodes in the Neo4j graph for each individual, with attributes such as name, total assets, source of wealth, etc.
 
 #### Function that adds the individuals in the dataframe as nodes in the graph
+
 ```python
 def create_graph(df, driver):
     # Create nodes with names and IDs
@@ -159,6 +164,7 @@ def create_graph(df, driver):
 4. Function to Create Relationships Between Nodes: This function creates relationships between nodes in the graph based on specified criteria, such as known associates, family members, or service providers. Currently we have chosen 
 
 #### Function that creates an edge between 2 nodes in the graph, using their unique IDs as keys
+
 ```python
 def create_relationship(session, from_id, to_id, relationship):
     # Check if the relationship already exists
@@ -186,6 +192,7 @@ def create_relationship(session, from_id, to_id, relationship):
 5. Functions for Node Creation and Relationship Processing: These functions handle the creation or update of nodes, as well as the processing of relationship columns from the DataFrame and adding connections to the graph.
 
 #### Function that creates or updates a node in the graph
+
 ```python
 def create_or_update_node(session, node_id, node_name, node_type, attributes=None):
     # Check if the node already exists
@@ -208,6 +215,7 @@ def create_or_update_node(session, node_id, node_name, node_type, attributes=Non
 ```
 
 #### Function that processes relationship columns and adds connections to the graph
+
 ```python
 def process_relationship_column(session, person_id, column_name, column_data, relationship_col):
     try:
@@ -233,6 +241,7 @@ def process_relationship_column(session, person_id, column_name, column_data, re
 ```
 
 #### Function that adds connections to the graph based on DataFrame columns
+
 ```python
 def add_connections_to_graph(df, driver):
     with driver.session() as session:
@@ -245,6 +254,7 @@ def add_connections_to_graph(df, driver):
 ```
 
 ### Conclusion
+
 Now that we have defined all the necessary functions to both get the raw data and import it as nodes and edges into Neo4J, let us put it all together and see what the resulting graph looks like:
 
 ```python
@@ -268,11 +278,12 @@ print('***** Connections loaded *****')
 Now that all the nodes and edges have been loaded into Neo4j, this web of wealth can offer invaluable insights into the world of high-net-worth individuals, such as the aforementioned use cases spanning financial management, security, personalized services, and strategic planning. For example, we can see the associates and connections of 2 publicly available individuals (Thierry Henri Stern from Patek Philippe and Yeung Sau Shing from the Emperor Group) in our graph below, being able to tell at a glance from their attributes some noteworthy information.
 
 ![](/themes/paper/static/images/Thierry_Henri_Graph.png)
-| Attribute | Value |
-|------|-----------------------|
+
+| Attribute           | Value               |
+|---------------------|---------------------|
 | dossierName         | Thierry Henri Stern |
 | entityName          | Patek Philippe      |
-| netWorthLower      | 660,000,000         |
+| netWorthLower       | 660,000,000         |
 | liquidLower         | 35,000,000          |
 | householdNetWorth   | 690,000,000         |
 | householdWealth     | 665,000,000         |
@@ -285,8 +296,8 @@ Now that all the nodes and edges have been loaded into Neo4j, this web of wealth
 
 You can tell from the connecting edge that he is related through business to Yeung Sau Shing, and upon looking at his node's attributes one is able to discover:
 
-| Attribute | Value |
-|------|-----------------------|
+| Attribute           | Value               |
+|---------------------|---------------------|
 | dossierName         | Yeung Sau Shing     |
 | dateOfBirth         | 1943-03-03          |
 | dossierState        | active              |
@@ -294,10 +305,8 @@ You can tell from the connecting edge that he is related through business to Yeu
 | gender              | Male                |
 | primaryCompany      | Emperor Group       |
 | position            | Chairman            |
-| netWorthLower      | 1,400,000,000       |
+| netWorthLower       | 1,400,000,000       |
 | liquidLower         | 930,000,000         |
 | householdNetWorth   | 1,600,000,000       |
 | householdWealth     | 1,600,000,000       |
 | householdLiquidAsset| 930,000,000         |
-
-
