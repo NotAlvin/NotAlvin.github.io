@@ -7,7 +7,7 @@ math = false
 
 ## Unveiling High-Net-Worth Networks with Neo4j
 
-![Donald Trump](https://notalvin.github.io/posts/imagesDonald_Trump_Graph.png)
+![Donald Trump](https://notalvin.github.io/posts/images/Donald_Trump_Graph.png)
 
 ### Introduction to Neo4j
 
