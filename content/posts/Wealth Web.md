@@ -36,7 +36,9 @@ For high-net-worth individuals, understanding their intricate web of connections
 
 ## Utilizing Wealth-X data to build such a graph
 
-Let's begin by getting the data required to build such a graph from Wealth-X, a company providing verified data on high-net-worth individuals. The choice of Wealth-X for data retrieval stems from its unparalleled collection of records on wealthy individuals and by leveraging their clean and trustable data, we can tap into a wealth of information crucial for informed decision-making, strategic planning, and tailored engagement strategies with high-net-worth individuals. You will need a Wealth-X account with an associated username, password and API key.
+Let's begin by getting the data required to build such a graph from Wealth-X, a company providing verified data on high-net-worth individuals. The choice of Wealth-X for data retrieval stems from its unparalleled collection of records on wealthy individuals.
+
+By leveraging their clean and trustable data, we can tap into a wealth of information crucial for informed decision-making, strategic planning, and tailored engagement strategies with high-net-worth individuals. You will need a Wealth-X account with an associated username, password and API key.
 
 ```python
 import pandas as pd
@@ -310,3 +312,13 @@ You can tell from the connecting edge that he is related through business to Yeu
 | householdNetWorth   | 1,600,000,000       |
 | householdWealth     | 1,600,000,000       |
 | householdLiquidAsset| 930,000,000         |
+
+
+Queries to filter and find linkages between individuals can be written in Cypher, a SQL-like language allowing users to unlock the full potential of property graph database. [(Documentation)](https://neo4j.com/docs/cypher-manual/current/introduction/)
+
+Some sample queries that I used can be found below, but the possibilities are endless!
+| Example  | Description  | Query                                                                                   |
+|-------|-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
+|a| Original graph with Bernard Ecclestone and his connections that are people (Main node's id = 46278)  | MATCH p=(a:Person)-[]-(b:Person)-[]-(c:Person) where a.id=46278 RETURN p LIMIT 1000; |
+|b| Selecting individuals who were created and added manually, along with their network | MATCH p=(n:Created_Person)-[]-()-[]-()-[]-() RETURN p LIMIT 1000;                       |
+|c| Filtering for connections that raise a red flag such as Prosecutors| MATCH p=()-[]-()-[:Prosecutor]->() RETURN p LIMIT 25;                                   |
