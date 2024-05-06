@@ -40,7 +40,7 @@ if __name__ == "__main__":
 ```
 
 ## Getting the test data
-While the AgentCoder paper has tested multiple models on 2 different evaluations ([HumanEval](https://paperswithcode.com/sota/code-generation-on-humaneval) and (MBPP)[https://huggingface.co/datasets/mbpp]) we shall write a reusable implementation and test it against just one to begin.
+While the AgentCoder paper has tested multiple models on 2 different evaluations ((HumanEval)[https://huggingface.co/datasets/openai_humaneval] and (MBPP)[https://huggingface.co/datasets/mbpp]) we shall write a reusable implementation and test it against just one to begin.
 
 Both datasets are available via API from Huggingface, and here is some get_humaneval_data function that pulls the first 100 examples:
 
@@ -173,7 +173,7 @@ Now that we have a way to get the completions, we can run the function on every 
 
 ## Evaluating the default responses
  
-Having saved the default model responses, let's write some code to see how it's performed on our 100 coding questions!
+Having saved the default model responses, let's write some code to see how it's performed on our 100 coding questions.
 
 - Loading Data: The code starts by loading a JSON file containing the dataset. The JSON file is assumed to have a list of dictionaries, each representing a coding task with its associated completion list.
 ```python
@@ -190,13 +190,15 @@ with open(r"dataset/downloaded_gpt-3.5-turbo-1106.json", 'r') as f:
 original_df = pd.DataFrame.from_dict(original_data, orient='index')
 ```python
 df = pd.DataFrame.from_dict(original_data, orient='index')
+# Convert index to integer
+df.index = df.index.astype(int)
 df['test_cases'] = df['test'].apply(lambda x: 'def ' + x.split('def ')[-1].strip())
 ```
 
 - Scorer Function: The scorer function takes a list of example answers and test cases as input. It iterates over each example answer, appends it to the test case, and then attempts to execute the combined code. If any exceptions occur during execution, it prints an error message.
 ```python
 def scorer(example_answers, test_cases):
-    temp = 0
+    temp = []
     for answer in example_answers:
         check = answer.split('def ')
         try:
@@ -204,9 +206,9 @@ def scorer(example_answers, test_cases):
             code_string = test_cases + '\n\n' + answer + '\n\n' + f'check({func_name})'
             try:
                 exec(code_string)
-                temp += 1
+                temp.append(1)
             except Exception:
-                #temp += 0
+                temp.append(0)
                 print(f'Error with {func_name}')
         except Exception:
             print(f'Error with {check}')
@@ -232,11 +234,98 @@ def get_scores(df):
 
 ```python
 # Getting performance for the default GPT mode
-scores = get_scores(df)
-df['one_shot'] = bool(scores[0]) # How many % succeeded
-df['any_pass'] = [bool(score) for score in scores] # If any succeeded
-df['percentage'] = [score/5 for score in scores] # How many % succeeded
+df['scores'] = scores
+df['any_pass'] = [1 if sum(score) >= 1 else 0 for score in scores] # If any succeeded
+df['percentage'] = [sum(score)/5 for score in scores] # How many % succeeded
+df['one_shot'] = df['scores'].apply(lambda x: x[0]) # How many % succeeded
 print('Percentage of questions successfully answered at first pass: ', sum(df['one_shot']), '%')
 print('Percentage of questions with at least 1 correct answer: ', sum(df['any_pass']), '%')
-print('Percentage of all solutions that passed test cases: ', sum(df['percentage']), '%')
+print('Percentage of all solutions that passed test cases: ', round(sum(df['percentage']), 2), '%')
+
+# Calculate the percentages
+percentage_any_pass = sum(df['any_pass']) / len(df) * 100
+percentage_one_shot = sum(df['one_shot']) / len(df) * 100
+percentage_overall_pass = sum(df['percentage']) / len(df) * 100
+
+# Plotting
+metrics = ['At least one correct answer', 'Successfully answered at first pass', 'Overall solutions passing test cases']
+percentages = [percentage_any_pass, percentage_one_shot, percentage_overall_pass]
+
+plt.figure(figsize=(10, 6))
+plt.bar(metrics, percentages, color='skyblue')
+plt.xlabel('Scoring Metric')
+plt.ylabel('Percentage')
+plt.title('Performance Metrics')
+plt.ylim(0, 100)
+
+# Adding percentages on top of bars
+for i, percentage in enumerate(percentages):
+    plt.text(i, percentage + 2, f"{percentage:.2f}%", ha='center')
+
+plt.show()
 ```
+
+From this we can see that our default model actually performs pretty well!
+
+- Percentage of questions successfully answered at first pass:  62 %
+- Percentage of questions with at least 1 correct answer:  87 %
+- Percentage of all solutions that passed test cases:  63.4 %
+
+![Default Performance](https://notalvin.github.io/posts/images/default_model_performance.png)
+
+### Resource consumption
+
+Beyond purely model performance, we can also measure how much time and tokens were consumed to generate the responses.
+
+Code for plotting performance and token consumption on a question by question basis:
+
+#### How many tokens were consumed to answer each question
+```python
+# Calculate cumulative changes for overall_pass metric
+overall_pass = df['percentage']
+
+# Plotting
+fig, ax1 = plt.subplots(figsize=(10, 6))
+
+color = 'tab:blue'
+ax1.set_xlabel('Number of Questions')
+ax1.set_ylabel('Cumulative Percentage', color=color)
+ax1.plot(overall_pass, label='Overall solutions passing test cases', linestyle='-', marker='o', color=color)
+ax1.tick_params(axis='y', labelcolor=color)
+ax1.set_ylim(-0.1, 1.1)
+
+ax2 = ax1.twinx()  
+color = 'tab:red'
+ax2.set_ylabel('Tokens Taken', color=color)
+ax2.plot(df['total_tokens'], label='Time Taken', linestyle='--', marker='x', color=color)
+ax2.tick_params(axis='y', labelcolor=color)
+
+fig.tight_layout()  
+fig.legend(loc="lower right")
+
+plt.title('Change in Overall Performance and Tokens Taken')
+plt.grid(True)
+plt.show()
+```
+#### How much time was taken to answer each question
+```python
+ax2 = ax1.twinx()  
+color = 'tab:red'
+ax2.set_ylabel('Time Taken (seconds)', color=color)
+ax2.plot(df['time_taken'], label='Time Taken', linestyle='--', marker='x', color=color)
+ax2.tick_params(axis='y', labelcolor=color)
+
+fig.tight_layout()  
+fig.legend(loc="lower right")
+
+plt.title('Change in Overall Performance and Time Taken')
+plt.grid(True)
+plt.show()
+```
+![Default Performance](https://notalvin.github.io/posts/images/default_model_tokens.png)
+![Default Performance](https://notalvin.github.io/posts/images/default_model_time.png)
+
+## Conclusions - Evaluation of default model and next steps
+With an overall first pass accuracy of 62%, the default model has performed decently on our 100 question dataset. Based on the above graphs there does not appear to be much correlation between time taken/token consumption and whether the questions were correctly answered. However these metrics will be much more relevant in our next steps, where attempting to use Agents to create a coding workflow will cost much more time and tokens, and we will have to consider if any performance gains are worth considering.
+
+Stay tuned for the next article!
