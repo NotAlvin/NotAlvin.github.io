@@ -96,7 +96,7 @@ def get_humaneval_dataset():
         print("Error:", response.status_code)
 ```
 
-## Experiment Design
+## Getting a benchmark answer
 
 Now that we have downloaded and saved the dataset, we want to get a "completion", or answer from the chosen model for each prompt in the dataset. These prompts are coding questions such as:
 
@@ -106,7 +106,7 @@ from typing import List\n\n\ndef has_close_elements(numbers: List[float], thresh
 
 After some processing to create an instructional prompt asking the GPT model to generate a solution using the given language, we wrap it in a function that from a given question dataset row, model and language, asks the model to generate a solution N=5 times.
 
-# Function to fetch completion
+### Function to fetch completion
 ```python
 def fetch_completion(data_entry, model,lg, construct_few_shot_prompt, times = 5):
     if "need_reproduce" in data_entry.keys() and data_entry["need_reproduce"]==False:
@@ -169,13 +169,74 @@ def fetch_completion(data_entry, model,lg, construct_few_shot_prompt, times = 5)
     return data_entry
 ```
 
-## Conclusion
+Now that we have a way to get the completions, we can run the function on every line of the question dataset and save the resulting answers for evaluation.
+
+## Evaluating the default responses
+ 
+Having saved the default model responses, let's write some code to see how it's performed on our 100 coding questions!
 
 - Loading Data: The code starts by loading a JSON file containing the dataset. The JSON file is assumed to have a list of dictionaries, each representing a coding task with its associated completion list.
+```python
+import json
+import pandas as pd
+import matplotlib.pyplot as plt
+
+with open(r"dataset/downloaded_gpt-3.5-turbo-1106.json", 'r') as f:
+    original_data = json.load(f)
+    original_data = dict(enumerate(original_data))
+```
+
 - Converting to DataFrame: The code converts the loaded data into a Pandas DataFrame for easier manipulation and analysis.
+original_df = pd.DataFrame.from_dict(original_data, orient='index')
+```python
+df = pd.DataFrame.from_dict(original_data, orient='index')
+df['test_cases'] = df['test'].apply(lambda x: 'def ' + x.split('def ')[-1].strip())
+```
+
 - Scorer Function: The scorer function takes a list of example answers and test cases as input. It iterates over each example answer, appends it to the test case, and then attempts to execute the combined code. If any exceptions occur during execution, it prints an error message.
+```python
+def scorer(example_answers, test_cases):
+    temp = 0
+    for answer in example_answers:
+        check = answer.split('def ')
+        try:
+            func_name = answer.split('def ')[1].split('(')[0].strip()
+            code_string = test_cases + '\n\n' + answer + '\n\n' + f'check({func_name})'
+            try:
+                exec(code_string)
+                temp += 1
+            except Exception:
+                #temp += 0
+                print(f'Error with {func_name}')
+        except Exception:
+            print(f'Error with {check}')
+    return temp
+```
+
 - get_scores Function: This function iterates over the DataFrame rows, extracts the example answers and test cases for each task, and calculates scores using the scorer function.
+```python
+def get_scores(df):
+    scores = []
+    for index, row in df.iterrows():
+        example_answers = row['completion_list']
+        test_cases = row['test_cases']
+        scores.append(scorer(example_answers, test_cases))
+    return scores
+```
+
 - Calculating Scores: The code then calculates two metrics:
+    - The percentage of questions where 
     - The percentage of questions with at least one correct answer.
     - The percentage of all solutions that passed the test cases.
 - Printing Results: Finally, the code prints out the calculated percentages.
+
+```python
+# Getting performance for the default GPT mode
+scores = get_scores(df)
+df['one_shot'] = bool(scores[0]) # How many % succeeded
+df['any_pass'] = [bool(score) for score in scores] # If any succeeded
+df['percentage'] = [score/5 for score in scores] # How many % succeeded
+print('Percentage of questions successfully answered at first pass: ', sum(df['one_shot']), '%')
+print('Percentage of questions with at least 1 correct answer: ', sum(df['any_pass']), '%')
+print('Percentage of all solutions that passed test cases: ', sum(df['percentage']), '%')
+```
