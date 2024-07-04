@@ -202,3 +202,6 @@ df['Country'] = df.apply(lambda x: final_country(x['Contact Information'], x.Cou
 ```
 
 Now we have successfully labelled our contact information with what is as good a guess as any as to what country it belongs to!
+
+### Future work
+Ultimately I chose to stop here as performance was not a key metric and majority of my dataset was successfully labelled. However, fome further improvements can also be made, as I also managed to scrape some other useful information such as the company description from the source of data, which can contain keywords like the country of origin or which stock exchange it belongs to. All this information could be used to better pinpoint where the company is from and can be used as part of the embedded string for a similarity search.
