@@ -103,4 +103,107 @@ This gives us a dictionary of country codes mapped to countries, which means tha
 As you can see from the code, some codes map to multiple countries (e.g. Kazakhstan and Russia both share +7). Furthermore, the phone numbers scraped do not uniformly follow the same format, with many North American (USA/Canada) number using their state codes as their leading digits instead of the country code. Some state codes overlap with existing country codes (E.g. +212 being the country code for Morocco whilst being the telephone area code in the United States that covers the central part of Manhattan in New York City) making it difficult to simple rely on the mapping data gotten.
 
 ### Solution 2 - Using the cities in the addresses
+Given the issues with the above attempt, how can we do better? Another promising angle based on the information we have is to try and use the cities mentioned in the addresses as a clue to derive what country the address comes from.
+To implement this the first step is to find a way to map city names to the country the city belongs to, and luckily this information is also available on the internet. [Generously provided for free by simplemaps.com](https://simplemaps.com/data/world-cities)
 
+Upon downloading the worldcities.csv, we can create a mapping dictionary and use that to tag the companies based on the city mentioned in their address. I used regex to find the city names since the addresses follow a common format.
+
+```python
+def get_city_mapping():
+    cities = pd.read_csv('utils/data/Scrape/worldcities.csv')
+    city_storage = {}
+    city_storage['St. Peter Port'] = {'Guernsey'}
+    for i, row in cities.iterrows():
+        city = remove_diacritics(row['city'])
+        if city not in city_storage.keys():
+            city_storage[city] = {row['country']}
+        else:
+            city_storage[city].add(row['country'])
+    return city_storage
+
+def extract_city_names(lst):
+    for i in range(len(lst) - 1, -1, -1):
+        if re.search(r'\d', lst[i]):
+            if i + 1 < len(lst):
+                return ' '.join(lst[i+1:]).split(',')[-1].strip()
+
+def label_country_by_city(contact_information, city_storage):
+    country = {'Unknown'}
+    try:
+        temp = contact_information['Address Line 2'].split(' ')
+        city = extract_city_names(temp)
+        country = city_storage[city]
+    except:
+        country = {'Unknown'}
+    return country
+```
+
+Unfortunately as above, this approach is not perfect either. Many city names are common amongst multiple countries (E.g. Paris, France & Paris, Texas), and this means that we cannot tell exactly an address comes from by just using the city name.
+
+What can we do to solve this problem? Fret not, as our previous efforts were not in vain as the work done allows us to generate a set of candidate countries from which to draw from, narrowing down the possible countries from which we can select the hopefully correct answer using the third method.
+
+### Solution 3 - Similarity scoring using word embeddings
+
+Embeddings work effectively for identifying the country of an address because they transform textual data into a numerical form that captures semantic meaning and relationships. This approach works because:
+
+1. Semantic Capture: Embeddings, created by models like BERT or Word2Vec, encode words or phrases into dense vectors. These vectors capture not just the individual meaning of words but also their contextual relationships. For addresses, this means that embeddings can understand geographic terms, city names, and country-specific postal codes within the context they appear.
+
+2. Dimensionality Reduction: Embeddings reduce high-dimensional textual data into a manageable, dense vector space. This allows for efficient computation and comparison of textual data, such as addresses.
+
+3. Similarity Representation: In the embedding space, similar addresses are placed closer to each other. For example, addresses from the same country will have similar place names, postal codes, and formatting, leading their embeddings to cluster together in the vector space.
+
+4. Generalization and Context: Embeddings can generalize across different but semantically related terms. For example, different cities within the same country might have distinct names but will share linguistic and contextual patterns that embeddings can capture.
+
+When an address is converted into an embedding, its vector representation inherently carries information about the geographic and linguistic context. By comparing these embeddings using cosine similarity, we can effectively measure how close or similar an input address is to reference embeddings of known countries. This closeness in the embedding space directly correlates with the likelihood that the address belongs to a particular country.
+
+Whilst the solution working as per the theory above would be ideal, in the real world unfortunately it is not so simple, as the noise from the street names and numbers etc. in the address meant that quite frequently the semantically closest country (as determined by the cosine similarity) would unfortunately not be quite correct.
+
+Additionally there is the noise that comes from similar countries, where even for a human we feel that countries like Canada and the United Kingdom would have many similar looking addresses.
+
+```python
+model_name = 'nomic-ai/nomic-embed-text-v1'
+tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
+model = AutoModel.from_pretrained(model_name, trust_remote_code=True)
+
+# Function to get embeddings
+def get_embeddings(texts, tokenizer, model):
+    inputs = tokenizer(texts, padding=True, truncation=True, return_tensors="pt")
+    with torch.no_grad():
+        outputs = model(**inputs)
+    return outputs.last_hidden_state.mean(dim=1)
+
+# Function to find the most similar country
+def find_country(address, countries, tokenizer, model):
+    country_embeddings = get_embeddings(countries, tokenizer, model)
+    address_embedding = get_embeddings([address], tokenizer, model)
+    address_embedding = address_embedding.flatten() # Convert to 1-D array
+    similarities = [1 - cosine(address_embedding, country_embedding) for country_embedding in country_embeddings]
+    most_similar_country = countries[similarities.index(max(similarities))]
+    return most_similar_country
+
+df['Country_phone'] = df['Contact Information'].apply(lambda x: label_country_by_phone(x, phone_storage))
+df['Country_city'] = df['Contact Information'].apply(lambda x: label_country_by_city(x, city_storage))
+df['Country_candidates'] = df.apply(lambda x: get_intersection(x.Country_phone, x.Country_city, tokenizer, model), axis = 1)
+df['Country'] = df.apply(lambda x: final_country(x['Contact Information'], x.Country_candidates), axis = 1)
+```
+
+As per the code above, we try to solve this information by creating a set of 'Country candidates', which uses the first 2 methods to generate some likely countries based on the phone number and city. Following the creation of that set, we then compare the city name against the country candidate list to get the closest match, choosing that as the selected country for the given contact information.
+
+## Putting it all together
+Now that we have described the process above, let's put it all together in a pipeline that can be run on our dataframe.
+
+```python
+import pandas as pd
+import re
+import unicodedata
+from transformers import AutoTokenizer, AutoModel
+import torch
+from scipy.spatial.distance import cosine
+
+df['Country_phone'] = df['Contact Information'].apply(lambda x: label_country_by_phone(x, phone_storage))
+df['Country_city'] = df['Contact Information'].apply(lambda x: label_country_by_city(x, city_storage))
+df['Country_candidates'] = df.apply(lambda x: get_intersection(x.Country_phone, x.Country_city, tokenizer, model), axis = 1)
+df['Country'] = df.apply(lambda x: final_country(x['Contact Information'], x.Country_candidates), axis = 1)
+```
+
+Now we have successfully labelled our contact information with what is as good a guess as any as to what country it belongs to!
