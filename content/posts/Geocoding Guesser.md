@@ -180,11 +180,6 @@ def find_country(address, countries, tokenizer, model):
     similarities = [1 - cosine(address_embedding, country_embedding) for country_embedding in country_embeddings]
     most_similar_country = countries[similarities.index(max(similarities))]
     return most_similar_country
-
-df['Country_phone'] = df['Contact Information'].apply(lambda x: label_country_by_phone(x, phone_storage))
-df['Country_city'] = df['Contact Information'].apply(lambda x: label_country_by_city(x, city_storage))
-df['Country_candidates'] = df.apply(lambda x: get_intersection(x.Country_phone, x.Country_city, tokenizer, model), axis = 1)
-df['Country'] = df.apply(lambda x: final_country(x['Contact Information'], x.Country_candidates), axis = 1)
 ```
 
 As per the code above, we try to solve this information by creating a set of 'Country candidates', which uses the first 2 methods to generate some likely countries based on the phone number and city. Following the creation of that set, we then compare the city name against the country candidate list to get the closest match, choosing that as the selected country for the given contact information.
